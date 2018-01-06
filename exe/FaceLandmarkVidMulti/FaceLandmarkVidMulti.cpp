@@ -296,9 +296,6 @@ INT_PTR CALLBACK MessageLoopThread(HWND dialogWindow, UINT message, WPARAM wPara
 DWORD WINAPI OpenFace(LPVOID arg)
 {
 	vector<string> arguments = get_arguments(__argc, __argv);
-	//vector<string> arguments;
-	//arguments.push_back("FaceLandmarkVidMulti.exe");
-	//arguments.push_back("C:\\Users\\guy92\\Desktop\\Face-orientation-analysis-program-master\\videos\\0188_03_021_al_pacino");
 
 	// Some initial parameters that can be overriden from command line	
 	vector<string> files, depth_directories, tracked_videos_output, dummy_out;
@@ -315,10 +312,6 @@ DWORD WINAPI OpenFace(LPVOID arg)
 	det_params.reinit_video_every = -1;
 
 	det_params.curr_face_detector = LandmarkDetector::FaceModelParameters::HOG_SVM_DETECTOR;
-
-	//FaceAnalysis::FaceAnalyserParameters face_analysis_params(arguments);
-	//face_analysis_params.OptimizeForImages();
-	//FaceAnalysis::FaceAnalyser face_analyser(face_analysis_params);
 
 	vector<LandmarkDetector::FaceModelParameters> det_parameters;
 	det_parameters.push_back(det_params);
@@ -509,8 +502,6 @@ DWORD WINAPI OpenFace(LPVOID arg)
 
 			// Go through every model and update the tracking
 			tbb::parallel_for(0, (int)clnf_models.size(), [&](int model) {
-				//for(unsigned int model = 0; model < clnf_models.size(); ++model)
-				//{
 
 				bool detection_success = false;
 
@@ -553,10 +544,6 @@ DWORD WINAPI OpenFace(LPVOID arg)
 					detection_success = LandmarkDetector::DetectLandmarksInVideo(grayscale_image, depth_image, clnf_models[model], det_parameters[model]);
 				}
 			});
-
-			cv::Mat_<double> landmarks_2D = clnf_models[0].detected_landmarks;
-
-			landmarks_2D = landmarks_2D.reshape(1, 2).t();
 
 			// Go through every model and visualise the results
 			for (size_t model = 0; model < clnf_models.size(); ++model)
@@ -654,8 +641,6 @@ DWORD WINAPI OpenFace(LPVOID arg)
 			frame_count++;
 		}
 
-		frame_count = 0;
-
 		// Reset the model, for the next video
 		for (size_t model = 0; model < clnf_models.size(); ++model)
 		{
@@ -668,8 +653,12 @@ DWORD WINAPI OpenFace(LPVOID arg)
 		{
 			done = true;
 		}
+
+		// Reset the variable, for the next video
+		frame_count = 0;
 	}
 
+	// Reset the dialog button and utill_variable
 	Button_Enable(GetDlgItem(dialogWindow, IDC_RECORD), true);
 	Openface_thread_activate = false;
 	Runing_thread = 0;

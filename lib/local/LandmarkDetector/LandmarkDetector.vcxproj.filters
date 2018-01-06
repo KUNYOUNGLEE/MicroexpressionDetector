@@ -34,7 +34,7 @@
     <ClCompile Include="src\LandmarkDetectorParameters.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="MicroexpressionDetectorFunc.cpp">
+    <ClCompile Include="src\MicroexpressionDetectorFunc.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,7 +75,7 @@
     <ClInclude Include="include\LandmarkDetectorFunc.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="MicroexpressionDetectorFunc.h">
+    <ClInclude Include="include\MicroexpressionDetectorFunc.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>
