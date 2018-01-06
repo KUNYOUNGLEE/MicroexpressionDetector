@@ -19,47 +19,8 @@ namespace LandmarkDetector
 {
 
 	// For subpixel accuracy drawing
-	const int draw_shiftbits = 4;
-	const int draw_multiplier = 1 << 4;
-
-
-	// Useful utility for creating directories for storing the output files
-	void create_directory_from_file(string output_path)
-	{
-
-		// Creating the right directory structure
-
-		// First get rid of the file
-		auto p = path(path(output_path).parent_path());
-
-		if (!p.empty() && !boost::filesystem::exists(p))
-		{
-			bool success = boost::filesystem::create_directories(p);
-			if (!success)
-			{
-				cout << "Failed to create a directory... " << p.string() << endl;
-			}
-		}
-	}
-
-	// Useful utility for creating directories for storing the output files
-	void create_directories(string output_path)
-	{
-
-		// Creating the right directory structure
-
-		// First get rid of the file
-		auto p = path(output_path);
-
-		if (!p.empty() && !boost::filesystem::exists(p))
-		{
-			bool success = boost::filesystem::create_directories(p);
-			if (!success)
-			{
-				cout << "Failed to create a directory... " << p.string() << endl;
-			}
-		}
-	}
+	const int draw_shiftbits_micro = 4;
+	const int draw_multiplier_micro = 1 << 4;
 
 	//===========================================================================
 	// Visualisation functions
@@ -166,76 +127,61 @@ namespace LandmarkDetector
 	}
 
 	// Drawing landmarks on a face image
-	void DrawDistance(cv::Mat img, const cv::Mat_<double>& shape2D, const cv::Mat_<int>& visibilities)
+	void DrawDistance(cv::Mat img, const cv::Mat_<double>& shape2D, const cv::Mat_<int>& visibilities, double *distance)
 	{
 		int n = shape2D.rows / 2;
+		cv::Point featurePoint48, featurePoint54, normPoint1, normPoint2;
 
 		// Drawing feature points
 		if (n >= 66)
 		{
-			for (int i = 0; i < n; ++i)
+			// A rough heuristic for drawn point size
+			int thickness = (int)std::ceil(3.0* ((double)img.cols) / 640.0);
+			int thickness_2 = (int)std::ceil(1.0* ((double)img.cols) / 640.0);
+
+			if (visibilities.at<int>(48))
 			{
-				if (visibilities.at<int>(i))
-				{
-					cv::Point featurePoint(cvRound(shape2D.at<double>(i) * (double)draw_multiplier), cvRound(shape2D.at<double>(i + n) * (double)draw_multiplier));
+				cv::Point featurePoint(cvRound(shape2D.at<double>(48) * (double)draw_multiplier_micro), cvRound(shape2D.at<double>(48 + n) * (double)draw_multiplier_micro));
+				featurePoint48 = featurePoint;
 
-					// A rough heuristic for drawn point size
-					int thickness = (int)std::ceil(3.0* ((double)img.cols) / 640.0);
-					int thickness_2 = (int)std::ceil(1.0* ((double)img.cols) / 640.0);
-
-					if (i == 0)
-					{
-						cv::circle(img, featurePoint, 1 * draw_multiplier, cv::Scalar(0, 0, 255), thickness, CV_AA, draw_shiftbits);
-						cv::circle(img, featurePoint, 1 * draw_multiplier, cv::Scalar(255, 0, 0), thickness_2, CV_AA, draw_shiftbits);
-					}					
-
-				}
+				cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(0, 0, 255), thickness_2, CV_AA, draw_shiftbits_micro);
 			}
-		}
-		else if (n == 28) // drawing eyes
-		{
-			for (int i = 0; i < n; ++i)
+
+			if (visibilities.at<int>(54))
 			{
-				cv::Point featurePoint(cvRound(shape2D.at<double>(i) * (double)draw_multiplier), cvRound(shape2D.at<double>(i + n) * (double)draw_multiplier));
+				cv::Point featurePoint(cvRound(shape2D.at<double>(54) * (double)draw_multiplier_micro), cvRound(shape2D.at<double>(54 + n) * (double)draw_multiplier_micro));
+				featurePoint54 = featurePoint;
 
-				// A rough heuristic for drawn point size
-				int thickness = 1.0;
-				int thickness_2 = 1.0;
-
-				int next_point = i + 1;
-				if (i == 7)
-					next_point = 0;
-				if (i == 19)
-					next_point = 8;
-				if (i == 27)
-					next_point = 20;
-
-				cv::Point nextFeaturePoint(cvRound(shape2D.at<double>(next_point) * (double)draw_multiplier), cvRound(shape2D.at<double>(next_point + n) * (double)draw_multiplier));
-				if (i < 8 || i > 19)
-					cv::line(img, featurePoint, nextFeaturePoint, cv::Scalar(255, 0, 0), thickness_2, CV_AA, draw_shiftbits);
-				else
-					cv::line(img, featurePoint, nextFeaturePoint, cv::Scalar(0, 0, 255), thickness_2, CV_AA, draw_shiftbits);
-
-
+				cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(0, 0, 255), thickness_2, CV_AA, draw_shiftbits_micro);
 			}
-		}
-		else if (n == 6)
-		{
-			for (int i = 0; i < n; ++i)
+
+			if (visibilities.at<int>(39))
 			{
-				cv::Point featurePoint(cvRound(shape2D.at<double>(i) * (double)draw_multiplier), cvRound(shape2D.at<double>(i + n) * (double)draw_multiplier));
-
-				// A rough heuristic for drawn point size
-				int thickness = 1.0;
-				int thickness_2 = 1.0;
-
-				int next_point = i + 1;
-				if (i == 5)
-					next_point = 0;
-
-				cv::Point nextFeaturePoint(cvRound(shape2D.at<double>(next_point) * (double)draw_multiplier), cvRound(shape2D.at<double>(next_point + n) * (double)draw_multiplier));
-				cv::line(img, featurePoint, nextFeaturePoint, cv::Scalar(255, 0, 0), thickness_2, CV_AA, draw_shiftbits);
+				cv::Point featurePoint(cvRound(shape2D.at<double>(39) * (double)draw_multiplier_micro), cvRound(shape2D.at<double>(39 + n) * (double)draw_multiplier_micro));
+				normPoint1 = featurePoint;
+				cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(0, 255, 0), thickness_2, CV_AA, draw_shiftbits_micro);
 			}
+
+			if (visibilities.at<int>(42))
+			{
+				cv::Point featurePoint(cvRound(shape2D.at<double>(42) * (double)draw_multiplier_micro), cvRound(shape2D.at<double>(42 + n) * (double)draw_multiplier_micro));
+				normPoint2 = featurePoint;
+				cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(0, 255, 0), thickness_2, CV_AA, draw_shiftbits_micro);
+			}
+			double norm_factor = cv::norm(normPoint1 - normPoint2);
+			double res = cv::norm(featurePoint48 - featurePoint54)/ norm_factor;//Euclidian distance
+			
+			char dist[255];
+			sprintf(dist, "%0.2lf", res);
+			string distr("N_dist:");
+			distr += dist;
+			cv::putText(img, distr, cv::Point(100, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
+			*distance = res;
+
+			sprintf(dist, "%0.1lf", norm_factor);
+			distr = "Norm_factor:";
+			distr += dist;
+			cv::putText(img, distr, cv::Point(220, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
 		}
 	}
 
@@ -259,38 +205,38 @@ namespace LandmarkDetector
 			cv::Point featurePoint;
 			if (shape2D.cols == 1)
 			{
-				featurePoint = cv::Point(cvRound(shape2D.at<double>(i) * (double)draw_multiplier), cvRound(shape2D.at<double>(i + n) * (double)draw_multiplier));
+				featurePoint = cv::Point(cvRound(shape2D.at<double>(i) * (double)draw_multiplier_micro), cvRound(shape2D.at<double>(i + n) * (double)draw_multiplier_micro));
 			}
 			else
 			{
-				featurePoint = cv::Point(cvRound(shape2D.at<double>(i, 0) * (double)draw_multiplier), cvRound(shape2D.at<double>(i, 1) * (double)draw_multiplier));
+				featurePoint = cv::Point(cvRound(shape2D.at<double>(i, 0) * (double)draw_multiplier_micro), cvRound(shape2D.at<double>(i, 1) * (double)draw_multiplier_micro));
 			}
 			// A rough heuristic for drawn point size
 			int thickness = (int)std::ceil(5.0* ((double)img.cols) / 640.0);
 			int thickness_2 = (int)std::ceil(1.5* ((double)img.cols) / 640.0);
 
-			cv::circle(img, featurePoint, 1 * draw_multiplier, cv::Scalar(0, 0, 255), thickness, CV_AA, draw_shiftbits);
-			cv::circle(img, featurePoint, 1 * draw_multiplier, cv::Scalar(255, 0, 0), thickness_2, CV_AA, draw_shiftbits);
+			cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(0, 0, 255), thickness, CV_AA, draw_shiftbits_micro);
+			cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(255, 0, 0), thickness_2, CV_AA, draw_shiftbits_micro);
 
 		}
 
 	}
 
 	// Drawing detected landmarks on a face image
-	void DrawDistance(cv::Mat img, const CLNF& clnf_model)
+	void DrawDistance(cv::Mat img, const CLNF& clnf_model, double *dist)
 	{
 
 		int idx = clnf_model.patch_experts.GetViewIdx(clnf_model.params_global, 0);
 
 		// Because we only draw visible points, need to find which points patch experts consider visible at a certain orientation
-		DrawDistance(img, clnf_model.detected_landmarks, clnf_model.patch_experts.visibilities[0][idx]);
+		DrawDistance(img, clnf_model.detected_landmarks, clnf_model.patch_experts.visibilities[0][idx], dist);
 
 		// If the model has hierarchical updates draw those too
 		for (size_t i = 0; i < clnf_model.hierarchical_models.size(); ++i)
 		{
 			if (clnf_model.hierarchical_models[i].pdm.NumberOfPoints() != clnf_model.hierarchical_mapping[i].size())
 			{
-				DrawDistance(img, clnf_model.hierarchical_models[i]);
+				DrawDistance(img, clnf_model.hierarchical_models[i], dist);
 			}
 		}
 	}

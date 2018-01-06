@@ -544,7 +544,10 @@ DWORD WINAPI OpenFace(LPVOID arg)
 					detection_success = LandmarkDetector::DetectLandmarksInVideo(grayscale_image, depth_image, clnf_models[model], det_parameters[model]);
 				}
 			});
+			double dist = 0;
 
+			// 랜드마크 검출 끝난 후 화면에 랜드마크 뿌려줌, Draw함수 참조!
+			// Microexpression 검출에 가장 중요한 부분!!!
 			// Go through every model and visualise the results
 			for (size_t model = 0; model < clnf_models.size(); ++model)
 			{
@@ -553,10 +556,13 @@ DWORD WINAPI OpenFace(LPVOID arg)
 				double detection_certainty = clnf_models[model].detection_certainty;
 				double visualisation_boundary = -0.1;
 
+
 				// Only draw if the reliability is reasonable, the value is slightly ad-hoc
 				if (detection_certainty < visualisation_boundary)
 				{
-					LandmarkDetector::Draw(disp_image, clnf_models[model]);
+					//LandmarkDetector::Draw(disp_image, clnf_models[model]);
+					//Microexpression 검출을 위해 선언된 함수
+					LandmarkDetector::DrawDistance(disp_image, clnf_models[model], &dist);
 
 					if (detection_certainty > 1)
 						detection_certainty = 1;
