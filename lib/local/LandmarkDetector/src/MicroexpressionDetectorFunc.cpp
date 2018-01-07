@@ -127,7 +127,7 @@ namespace LandmarkDetector
 	}
 
 	// Drawing landmarks on a face image
-	void DrawDistance(cv::Mat img, const cv::Mat_<double>& shape2D, const cv::Mat_<int>& visibilities, double *distance)
+	void DrawDistance(cv::Mat img, const cv::Mat_<double>& shape2D, const cv::Mat_<int>& visibilities, double *distance, double *norm_factor, int pre_dist)
 	{
 		int n = shape2D.rows / 2;
 		cv::Point featurePoint48, featurePoint54, normPoint1, normPoint2;
@@ -143,7 +143,6 @@ namespace LandmarkDetector
 			{
 				cv::Point featurePoint(cvRound(shape2D.at<double>(48) * (double)draw_multiplier_micro), cvRound(shape2D.at<double>(48 + n) * (double)draw_multiplier_micro));
 				featurePoint48 = featurePoint;
-
 				cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(0, 0, 255), thickness_2, CV_AA, draw_shiftbits_micro);
 			}
 
@@ -151,7 +150,6 @@ namespace LandmarkDetector
 			{
 				cv::Point featurePoint(cvRound(shape2D.at<double>(54) * (double)draw_multiplier_micro), cvRound(shape2D.at<double>(54 + n) * (double)draw_multiplier_micro));
 				featurePoint54 = featurePoint;
-
 				cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(0, 0, 255), thickness_2, CV_AA, draw_shiftbits_micro);
 			}
 
@@ -159,29 +157,30 @@ namespace LandmarkDetector
 			{
 				cv::Point featurePoint(cvRound(shape2D.at<double>(39) * (double)draw_multiplier_micro), cvRound(shape2D.at<double>(39 + n) * (double)draw_multiplier_micro));
 				normPoint1 = featurePoint;
-				cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(0, 255, 0), thickness_2, CV_AA, draw_shiftbits_micro);
 			}
 
 			if (visibilities.at<int>(42))
 			{
 				cv::Point featurePoint(cvRound(shape2D.at<double>(42) * (double)draw_multiplier_micro), cvRound(shape2D.at<double>(42 + n) * (double)draw_multiplier_micro));
 				normPoint2 = featurePoint;
-				cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(0, 255, 0), thickness_2, CV_AA, draw_shiftbits_micro);
 			}
-			double norm_factor = cv::norm(normPoint1 - normPoint2);
-			double res = cv::norm(featurePoint48 - featurePoint54)/ norm_factor;//Euclidian distance
-			
-			char dist[255];
-			sprintf(dist, "%0.2lf", res);
-			string distr("N_dist:");
-			distr += dist;
-			cv::putText(img, distr, cv::Point(100, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
+
+			double norm_dist = cv::norm(normPoint1 - normPoint2);
+			double res = cv::norm(featurePoint48 - featurePoint54);//Euclidian distance
 			*distance = res;
 
-			sprintf(dist, "%0.1lf", norm_factor);
-			distr = "Norm_factor:";
-			distr += dist;
-			cv::putText(img, distr, cv::Point(220, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
+			char dist_str[255];
+			sprintf(dist_str, "%0.2lf", norm_dist);
+			string distr("N_dist:");
+			distr += dist_str;
+			cv::putText(img, distr, cv::Point(450, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
+
+			if (abs(pre_dist - norm_dist) > 100)
+			{
+				*norm_factor = norm_dist;
+				cv::circle(img, normPoint1, 1 * draw_multiplier_micro, cv::Scalar(0, 255, 0), thickness_2, CV_AA, draw_shiftbits_micro);
+				cv::circle(img, normPoint2, 1 * draw_multiplier_micro, cv::Scalar(0, 255, 0), thickness_2, CV_AA, draw_shiftbits_micro);
+			}
 		}
 	}
 
@@ -223,20 +222,20 @@ namespace LandmarkDetector
 	}
 
 	// Drawing detected landmarks on a face image
-	void DrawDistance(cv::Mat img, const CLNF& clnf_model, double *dist)
+	void DrawDistance(cv::Mat img, const CLNF& clnf_model, double *dist, double *norm_factor, int pre_dist)
 	{
 
 		int idx = clnf_model.patch_experts.GetViewIdx(clnf_model.params_global, 0);
 
 		// Because we only draw visible points, need to find which points patch experts consider visible at a certain orientation
-		DrawDistance(img, clnf_model.detected_landmarks, clnf_model.patch_experts.visibilities[0][idx], dist);
+		DrawDistance(img, clnf_model.detected_landmarks, clnf_model.patch_experts.visibilities[0][idx], dist, norm_factor, pre_dist);
 
 		// If the model has hierarchical updates draw those too
 		for (size_t i = 0; i < clnf_model.hierarchical_models.size(); ++i)
 		{
 			if (clnf_model.hierarchical_models[i].pdm.NumberOfPoints() != clnf_model.hierarchical_mapping[i].size())
 			{
-				DrawDistance(img, clnf_model.hierarchical_models[i], dist);
+				DrawDistance(img, clnf_model.hierarchical_models[i], dist, norm_factor, pre_dist);
 			}
 		}
 	}
