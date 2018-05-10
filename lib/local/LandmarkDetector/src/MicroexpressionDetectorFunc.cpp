@@ -169,18 +169,18 @@ namespace LandmarkDetector
 			double res = cv::norm(featurePoint48 - featurePoint54);//Euclidian distance
 			*distance = res;
 
-			char dist_str[255];
-			sprintf(dist_str, "%0.2lf", norm_dist);
-			string distr("N_dist:");
-			distr += dist_str;
-			cv::putText(img, distr, cv::Point(450, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
+			//char dist_str[255];
+			//sprintf(dist_str, "%0.2lf", norm_dist);
+			//string distr("N_dist:");
+			//distr += dist_str;
+			//cv::putText(img, distr, cv::Point(450, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
 
-			if (abs(pre_dist - norm_dist) > 100)
-			{
-				*norm_factor = norm_dist;
-				cv::circle(img, normPoint1, 1 * draw_multiplier_micro, cv::Scalar(0, 255, 0), thickness_2, CV_AA, draw_shiftbits_micro);
-				cv::circle(img, normPoint2, 1 * draw_multiplier_micro, cv::Scalar(0, 255, 0), thickness_2, CV_AA, draw_shiftbits_micro);
-			}
+			//if (abs(pre_dist - norm_dist) > 100)
+			//{
+			//	*norm_factor = norm_dist;
+			//	cv::circle(img, normPoint1, 1 * draw_multiplier_micro, cv::Scalar(0, 255, 0), thickness_2, CV_AA, draw_shiftbits_micro);
+			//	cv::circle(img, normPoint2, 1 * draw_multiplier_micro, cv::Scalar(0, 255, 0), thickness_2, CV_AA, draw_shiftbits_micro);
+			//}
 		}
 	}
 
@@ -214,8 +214,8 @@ namespace LandmarkDetector
 			int thickness = (int)std::ceil(5.0* ((double)img.cols) / 640.0);
 			int thickness_2 = (int)std::ceil(1.5* ((double)img.cols) / 640.0);
 
-			cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(0, 0, 255), thickness, CV_AA, draw_shiftbits_micro);
-			cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(255, 0, 0), thickness_2, CV_AA, draw_shiftbits_micro);
+			cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(255, 0, 0), thickness-1, CV_AA, draw_shiftbits_micro);
+			//cv::circle(img, featurePoint, 1 * draw_multiplier_micro, cv::Scalar(255, 0, 0), thickness_2, CV_AA, draw_shiftbits_micro);
 
 		}
 
@@ -249,8 +249,8 @@ namespace LandmarkDetector
 			int thickness = (int)std::ceil(5.0* ((double)img.cols) / 640.0);
 			int thickness_2 = (int)std::ceil(1.5* ((double)img.cols) / 640.0);
 
-			cv::circle(img, p, 1, cv::Scalar(0, 0, 255), thickness, CV_AA);
-			cv::circle(img, p, 1, cv::Scalar(255, 0, 0), thickness_2, CV_AA);
+			cv::circle(img, p, 1, cv::Scalar(255, 0, 0), thickness-1, CV_AA);
+			//cv::circle(img, p, 1, cv::Scalar(255, 0, 0), thickness_2, CV_AA);
 		}
 
 	}

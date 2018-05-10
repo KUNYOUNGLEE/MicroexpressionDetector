@@ -597,8 +597,8 @@ DWORD WINAPI OpenFace(LPVOID arg)
 				if (detection_certainty < visualisation_boundary)
 				{
 					//Microexpression 검출을 위해 선언된 함수
-					LandmarkDetector::DrawDistance(disp_image, clnf_models[model], &dist, &norm_factor, pre_dist);
-				
+					//LandmarkDetector::DrawDistance(disp_image, clnf_models[model], &dist, &norm_factor, pre_dist);
+					LandmarkDetector::Draw(disp_image, clnf_models[model]);
 					//Size variation 보정을 위한 특징점 거리 측정(0.5초마다 측정)
 					if (frame_count % 15 == 0)
 					{
@@ -672,21 +672,21 @@ DWORD WINAPI OpenFace(LPVOID arg)
 				}
 			}
 
-			char str1[255];
-			sprintf(str1, "%0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf", Six_dist[0], Six_dist[1], Six_dist[2], Six_dist[3], Six_dist[4], Six_dist[5]);
-			string str2("Micro6_dist:  ");
-			str2 += str1;
-			cv::putText(disp_image, str2, cv::Point(10, 400), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
+			//char str1[255];
+			//sprintf(str1, "%0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf", Six_dist[0], Six_dist[1], Six_dist[2], Six_dist[3], Six_dist[4], Six_dist[5]);
+			//string str2("Micro6_dist:  ");
+			//str2 += str1;
+			//cv::putText(disp_image, str2, cv::Point(10, 400), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
 
-			sprintf(str1, "%0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf", Seven_dist[0], Seven_dist[1], Seven_dist[2], Seven_dist[3], Seven_dist[4], Seven_dist[5], Seven_dist[6]);
-			str2 = "Micro7_dist:  ";
-			str2 += str1;
-			cv::putText(disp_image, str2, cv::Point(10, 430), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
+			//sprintf(str1, "%0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf", Seven_dist[0], Seven_dist[1], Seven_dist[2], Seven_dist[3], Seven_dist[4], Seven_dist[5], Seven_dist[6]);
+			//str2 = "Micro7_dist:  ";
+			//str2 += str1;
+			//cv::putText(disp_image, str2, cv::Point(10, 430), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
 
-			sprintf(str1, "%0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf", Eight_dist[0], Eight_dist[1], Eight_dist[2], Eight_dist[3], Eight_dist[4], Eight_dist[5], Eight_dist[6], Eight_dist[7]);
-			str2 = "Micro8_dist:  ";
-			str2 += str1;
-			cv::putText(disp_image, str2, cv::Point(10, 460), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
+			//sprintf(str1, "%0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf  %0.2lf", Eight_dist[0], Eight_dist[1], Eight_dist[2], Eight_dist[3], Eight_dist[4], Eight_dist[5], Eight_dist[6], Eight_dist[7]);
+			//str2 = "Micro8_dist:  ";
+			//str2 += str1;
+			//cv::putText(disp_image, str2, cv::Point(10, 460), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
 
 			// Work out the framerate
 			if (frame_count % 10 == 0)
@@ -703,16 +703,16 @@ DWORD WINAPI OpenFace(LPVOID arg)
 			fpsSt += fpsC;
 			cv::putText(disp_image, fpsSt, cv::Point(10, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
 
-			char dist_str[255];
-			sprintf(dist_str, "%0.2lf", dist);
-			string distr("N_dist:");
-			distr += dist_str;
-			cv::putText(disp_image, distr, cv::Point(100, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
+			//char dist_str[255];
+			//sprintf(dist_str, "%0.2lf", dist);
+			//string distr("N_dist:");
+			//distr += dist_str;
+			//cv::putText(disp_image, distr, cv::Point(100, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
 
-			sprintf(dist_str, "%0.1lf", norm_factor);
-			distr = "Norm_factor:";
-			distr += dist_str;
-			cv::putText(disp_image, distr, cv::Point(220, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
+			//sprintf(dist_str, "%0.1lf", norm_factor);
+			//distr = "Norm_factor:";
+			//distr += dist_str;
+			//cv::putText(disp_image, distr, cv::Point(220, 20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255, 0, 0), 1, CV_AA);
 
 			int num_active_models = 0;
 
